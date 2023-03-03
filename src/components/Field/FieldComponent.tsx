@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { generateBombs, countAdjacentBombs } from "../../utils/utils";
+import { checkCells } from "../../utils/utils";
 
 import CellComponent from "./CellComponent";
 
@@ -7,6 +7,7 @@ const FieldComponent = () => {
     const [isStarted, setStart] = useState(false);
     const [bombs, setBombs] = useState<number[]>([]);
     const [revealedCells, setReveal] = useState<number[]>([]);
+    const [flagged, setFlag] = useState<number[]>([]);
 
     const onReveal = (index: number): void => {
         const isRevealed = revealedCells.includes(index);
@@ -15,11 +16,20 @@ const FieldComponent = () => {
         }
     };
 
-    const onStart = () => {
+    const onStart = (): void => {
         setStart(true);
     };
 
-    const onBombs = (bombs: number[]) => {
+    const onFlag = (index: number): void => {
+        const isFlagged = flagged.includes(index);
+        if (isFlagged) {
+            setFlag(flagged.filter((item) => item !== index));
+        } else {
+            setFlag([...flagged, index]);
+        }
+    };
+
+    const onBombs = (bombs: number[]): void => {
         setBombs(bombs);
     };
 
@@ -29,42 +39,8 @@ const FieldComponent = () => {
         setRevealArray(revealedCopy);
     };
 
-    const setRevealArray = (arr: number[]) => {
+    const setRevealArray = (arr: number[]): void => {
         setReveal([...revealedCells].concat(arr));
-    };
-
-    const checkCells = (
-        index: number,
-        revealedArr: number[],
-        bombs: number[]
-    ) => {
-        if (bombs.includes(index) || revealedCells.includes(index)) return;
-
-        revealedArr.push(index);
-
-        if (countAdjacentBombs(index, bombs) > 0) return;
-
-        const mainCol: number = index % 16;
-        const adjacentCells = [
-            [index - 17, index - 16, index - 15],
-            [index - 1, index + 1],
-            [index + 15, index + 16, index + 17],
-        ];
-
-        adjacentCells.forEach((item) => {
-            item.forEach((num) => {
-                const adjCol: number = num % 16;
-                const isInRange = num >= 0 && num <= 255;
-                const isAdjacent =
-                    Math.abs(adjCol - mainCol) === 1 ||
-                    Math.abs(adjCol - mainCol) === 0;
-                const isBomb = bombs.includes(num);
-
-                if (isInRange && isAdjacent && !isBomb) {
-                    checkCells(num, revealedArr, bombs);
-                }
-            });
-        });
     };
 
     const cells = [...new Array(16 * 16)].map((_, index) => {
@@ -79,6 +55,8 @@ const FieldComponent = () => {
                 revealEmptyCells={revealEmptyCells}
                 onStart={onStart}
                 onBombs={onBombs}
+                flagged={flagged}
+                onFlag={onFlag}
             />
         );
     });
