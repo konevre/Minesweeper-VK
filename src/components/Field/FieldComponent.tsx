@@ -9,6 +9,15 @@ const FieldComponent = () => {
     const [revealedCells, setReveal] = useState<number[]>([]);
     const [flagged, setFlag] = useState<number[]>([]);
 
+    const [isMouseDown, setMouseDown] = useState(false);
+
+    const onMouseDown = () => {
+        setMouseDown(true);
+    };
+    const onMouseUp = () => {
+        setMouseDown(false);
+    };
+
     const onReveal = (index: number): void => {
         const isRevealed = revealedCells.includes(index);
         if (!isRevealed) {
@@ -57,12 +66,18 @@ const FieldComponent = () => {
                 onBombs={onBombs}
                 flagged={flagged}
                 onFlag={onFlag}
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                isMouseDown={isMouseDown}
             />
         );
     });
 
     return (
-        <div className="grid basis-full grid-cols-16 grid-rows-16 bg-blue-200">
+        <div
+            onMouseLeave={onMouseUp}
+            className="grid basis-full grid-cols-16 grid-rows-16 bg-blue-200"
+        >
             {cells}
         </div>
     );

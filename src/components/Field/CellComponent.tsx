@@ -13,6 +13,9 @@ interface CellProps {
     onBombs: (bombs: number[]) => void;
     flagged: number[];
     onFlag: (index: number) => void;
+    onMouseUp: () => void;
+    onMouseDown: () => void;
+    isMouseDown: boolean;
 }
 
 const CellComponent = ({
@@ -26,6 +29,9 @@ const CellComponent = ({
     onBombs,
     flagged,
     onFlag,
+    onMouseDown,
+    onMouseUp,
+    isMouseDown,
 }: CellProps) => {
     const isBomb: boolean = bombs.includes(index);
     const adjacentBombsNum: number = countAdjacentBombs(index, bombs);
@@ -122,11 +128,15 @@ const CellComponent = ({
     };
     const cell = makeCell();
 
+    const style = isMouseDown ? "hover:bg-violet-600" : "";
+
     return (
         <div
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
             onContextMenu={handleClick}
             onClick={handleClick}
-            className="cursor-default border border-slate-900 p-1"
+            className={`${style} cursor-default border border-slate-900 p-1`}
         >
             {cell}
         </div>
