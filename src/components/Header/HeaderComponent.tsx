@@ -6,7 +6,7 @@ import TimerComponent from "./TimerComponent";
 
 const HeaderComponent = () => {
     return (
-        <div className="flex basis-1/5 justify-between bg-red-200">
+        <div className="flex h-8 justify-between bg-red-200">
             <MinesCounter />
             <EmojiComponent />
             <TimerComponent />

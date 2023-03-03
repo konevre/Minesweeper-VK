@@ -5,11 +5,11 @@ module.exports = {
     theme: {
         extend: {
             gridTemplateColumns: {
-                '16': 'repeat(16, minmax(0, 1fr))',
+                16: "repeat(16, minmax(0, 1fr))",
             },
             gridTemplateRows: {
-                '16': 'repeat(16, minmax(0, 1fr))',
-            }
+                16: "repeat(16, minmax(0, 1fr))",
+            },
         },
     },
     plugins: [],
