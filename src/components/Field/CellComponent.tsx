@@ -1,49 +1,67 @@
 import React, { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import {
+    failGameToggle,
+    revealCells,
+    setBombs,
+    setFlag,
+    startGameToggle,
+} from "../../store/minesweeperSlice";
 
-import { countAdjacentBombs, generateBombs } from "../../utils/utils";
+import {
+    checkCells,
+    countAdjacentBombs,
+    generateBombs,
+} from "../../utils/utils";
 
 interface CellProps {
     index: number;
-    isStarted: boolean;
-    bombs: number[];
-    revealedCells: number[];
-    onReveal: (index: number) => void;
-    revealEmptyCells: (index: number, bombs: number[]) => void;
-    onStart: () => void;
-    onBombs: (bombs: number[]) => void;
-    flagged: number[];
-    onFlag: (index: number) => void;
     onMouseUp: () => void;
     onMouseDown: () => void;
     isMouseDown: boolean;
-    onGameOver: () => void;
-    isGameOver: boolean;
 }
 
-const CellComponent = ({
+const CellComponent: React.FC<CellProps> = ({
     index,
-    isStarted,
-    bombs,
-    revealedCells,
-    onReveal,
-    revealEmptyCells,
-    onStart,
-    onBombs,
-    flagged,
-    onFlag,
     onMouseDown,
     onMouseUp,
     isMouseDown,
-    onGameOver,
-    isGameOver,
-}: CellProps) => {
+}) => {
+    const { isStarted, isGameOver, revealed, bombs, flags } = useAppSelector(
+        (state) => state.minesweeper
+    );
+
     const isBomb: boolean = bombs.includes(index);
     const adjacentBombsNum: number = countAdjacentBombs(index, bombs);
-    const isRevealed: boolean = revealedCells.includes(index);
+    const isRevealed: boolean = revealed.includes(index);
     const isEmpty: boolean = !isBomb && adjacentBombsNum === 0;
-    const isFlagged = flagged.includes(index);
+    const isFlagged = flags.includes(index);
     const [isQuestion, setQuestion] = useState(false);
     const [activatedBombCell, setActivatedBombCell] = useState("");
+
+    const dispatch = useAppDispatch();
+
+    const onFlag = (index: number): void => {
+        const isFlagged = flags.includes(index);
+        if (isFlagged) {
+            dispatch(setFlag(flags.filter((item) => item !== index)));
+        } else {
+            if (!isGameOver) dispatch(setFlag([...flags, index]));
+        }
+    };
+
+    const onReveal = (index: number): void => {
+        const isRevealed = revealed.includes(index);
+        if (!isRevealed && !isGameOver) {
+            dispatch(revealCells([...revealed, index]));
+        }
+    };
+
+    const revealEmptyCells = (index: number, bombs: number[]) => {
+        const revealedCopy = [...revealed];
+        checkCells(index, revealedCopy, bombs);
+        dispatch(revealCells(revealedCopy));
+    };
 
     const handleClick = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
@@ -52,10 +70,8 @@ const CellComponent = ({
         const rightClick = e.type === "contextmenu";
 
         if (leftClick) {
-            console.log("Left click");
             onLeftClick();
         } else if (rightClick) {
-            console.log("Right click");
             onRightClick();
         }
     };
@@ -80,15 +96,18 @@ const CellComponent = ({
     const clickReveal = (index: number): void => {
         onReveal(index);
 
+        console.log(isBomb, isStarted, isEmpty);
+
         if (isBomb) {
             setActivatedBombCell("bg-red-600");
-            onGameOver();
+            dispatch(failGameToggle(true));
         }
 
         if (!isStarted) {
             const bombs = generateBombs(index); // генерим бомбы
-            onBombs(bombs); // кладем бомбы в стейт
-            onStart(); // меняем на true
+            dispatch(setBombs(bombs));
+            dispatch(startGameToggle(true));
+
             if (isEmpty) revealEmptyCells(index, bombs); // если первый клик на пустое место
         }
         // если пустое место не на первом клике
@@ -98,44 +117,29 @@ const CellComponent = ({
     };
 
     const makeCell = (): string => {
-        if (isStarted) {
-            if (isBomb && isGameOver) {
-                // TODO: check if GAME IS OVER
-                return "💣";
-            } else {
-                if (isRevealed) {
-                    if (adjacentBombsNum === 0) {
-                        return "";
-                    } else {
-                        return `${adjacentBombsNum}`;
-                    }
-                } else {
-                    if (isFlagged) {
-                        if (isQuestion) {
-                            return "❓";
-                        } else {
-                            return "🚩";
-                        }
-                    } else {
-                        return "";
-                    }
-                }
-            }
-        } else {
-            if (isFlagged) {
-                if (isQuestion) {
-                    return "❓";
-                } else {
-                    return "🚩";
-                }
-            } else {
-                return "";
-            }
+        if (!isStarted) {
+            return isFlagged ? (isQuestion ? "❓" : "🚩") : "";
         }
+
+        if (isBomb && isGameOver) {
+            return "💣";
+        }
+
+        if (isRevealed) {
+            return adjacentBombsNum === 0 ? "" : `${adjacentBombsNum}`;
+        }
+
+        if (isFlagged) {
+            return isQuestion ? "❓" : "🚩";
+        }
+
+        return "";
     };
     const cell = makeCell();
 
     const style = isMouseDown ? "hover:bg-violet-600" : "";
+    const emptyRevealed =
+        isRevealed && isStarted && isEmpty ? "bg-slate-400" : "";
 
     return (
         <div
@@ -143,7 +147,7 @@ const CellComponent = ({
             onMouseUp={onMouseUp}
             onContextMenu={handleClick}
             onClick={handleClick}
-            className={`${style} ${activatedBombCell} cursor-default border border-slate-900 p-1`}
+            className={`${style} ${activatedBombCell} ${emptyRevealed} cursor-default border border-slate-900 p-1`}
         >
             {cell}
         </div>
