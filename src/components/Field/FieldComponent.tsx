@@ -8,10 +8,15 @@ const FieldComponent = () => {
     const [bombs, setBombs] = useState<number[]>([]);
     const [revealedCells, setReveal] = useState<number[]>([]);
     const [flagged, setFlag] = useState<number[]>([]);
-
     const [isMouseDown, setMouseDown] = useState(false);
+    const [isGameOver, setGameOver] = useState(false);
+
+    const onGameOver = (): void => {
+        setGameOver(true);
+    };
 
     const onMouseDown = () => {
+        // TODO: IF RIGHT CLICK -> NO DOWN
         setMouseDown(true);
     };
     const onMouseUp = () => {
@@ -20,7 +25,7 @@ const FieldComponent = () => {
 
     const onReveal = (index: number): void => {
         const isRevealed = revealedCells.includes(index);
-        if (!isRevealed) {
+        if (!isRevealed && !isGameOver) {
             setReveal([...revealedCells, index]);
         }
     };
@@ -34,7 +39,7 @@ const FieldComponent = () => {
         if (isFlagged) {
             setFlag(flagged.filter((item) => item !== index));
         } else {
-            setFlag([...flagged, index]);
+            if (!isGameOver) setFlag([...flagged, index]);
         }
     };
 
@@ -69,6 +74,8 @@ const FieldComponent = () => {
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 isMouseDown={isMouseDown}
+                onGameOver={onGameOver}
+                isGameOver={isGameOver}
             />
         );
     });
@@ -76,7 +83,7 @@ const FieldComponent = () => {
     return (
         <div
             onMouseLeave={onMouseUp}
-            className="grid basis-full grid-cols-16 grid-rows-16 bg-blue-200"
+            className="grid basis-full select-none grid-cols-16 grid-rows-16 bg-blue-200"
         >
             {cells}
         </div>

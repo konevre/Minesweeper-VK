@@ -16,6 +16,8 @@ interface CellProps {
     onMouseUp: () => void;
     onMouseDown: () => void;
     isMouseDown: boolean;
+    onGameOver: () => void;
+    isGameOver: boolean;
 }
 
 const CellComponent = ({
@@ -32,6 +34,8 @@ const CellComponent = ({
     onMouseDown,
     onMouseUp,
     isMouseDown,
+    onGameOver,
+    isGameOver,
 }: CellProps) => {
     const isBomb: boolean = bombs.includes(index);
     const adjacentBombsNum: number = countAdjacentBombs(index, bombs);
@@ -39,6 +43,7 @@ const CellComponent = ({
     const isEmpty: boolean = !isBomb && adjacentBombsNum === 0;
     const isFlagged = flagged.includes(index);
     const [isQuestion, setQuestion] = useState(false);
+    const [activatedBombCell, setActivatedBombCell] = useState("");
 
     const handleClick = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
@@ -72,11 +77,13 @@ const CellComponent = ({
     const onLeftClick = () => {
         clickReveal(index);
     };
-
     const clickReveal = (index: number): void => {
         onReveal(index);
 
-        if (isBomb) console.log("GAME OVER");
+        if (isBomb) {
+            setActivatedBombCell("bg-red-600");
+            onGameOver();
+        }
 
         if (!isStarted) {
             const bombs = generateBombs(index); // генерим бомбы
@@ -92,7 +99,7 @@ const CellComponent = ({
 
     const makeCell = (): string => {
         if (isStarted) {
-            if (isBomb && isRevealed) {
+            if (isBomb && isGameOver) {
                 // TODO: check if GAME IS OVER
                 return "💣";
             } else {
@@ -136,7 +143,7 @@ const CellComponent = ({
             onMouseUp={onMouseUp}
             onContextMenu={handleClick}
             onClick={handleClick}
-            className={`${style} cursor-default border border-slate-900 p-1`}
+            className={`${style} ${activatedBombCell} cursor-default border border-slate-900 p-1`}
         >
             {cell}
         </div>
