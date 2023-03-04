@@ -2,7 +2,7 @@ export const generateRandom = (): number => Math.floor(Math.random() * 255);
 
 export const generateBombs = (index: number): number[] => {
     const arr: number[] = [];
-    while (arr.length < 40) {
+    while (arr.length < 2) {
         const num = generateRandom();
         if (!arr.includes(num) && num !== index) {
             console.log(num === index);

@@ -7,16 +7,20 @@ interface Minesweeper {
     bombs: number[];
     revealed: number[];
     flags: number[];
+    isMouseDown: boolean;
 }
 
 const initialState: Minesweeper = {
     isStarted: false,
     isGameOver: false,
     isWin: false,
+    isMouseDown: false,
     bombs: [],
     revealed: [],
     flags: [],
 };
+
+// TODO -> WIN CONDITIONS
 
 const minesweeperSlice = createSlice({
     name: "minesweeper",
@@ -40,6 +44,9 @@ const minesweeperSlice = createSlice({
         setFlag: (state, action: PayloadAction<number[]>) => {
             state.flags = action.payload;
         },
+        setMouse: (state, action: PayloadAction<boolean>) => {
+            state.isMouseDown = action.payload;
+        },
     },
 });
 
@@ -53,4 +60,5 @@ export const {
     setBombs,
     revealCells,
     setFlag,
+    setMouse,
 } = actions;

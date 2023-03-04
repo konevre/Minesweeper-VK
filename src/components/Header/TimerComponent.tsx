@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/hooks";
+import NumbersComponent from "./NumbersComponent";
 
 const TimerComponent: React.FC = () => {
     const [timer, setTimer] = useState(0);
@@ -15,9 +16,13 @@ const TimerComponent: React.FC = () => {
 
             return () => clearInterval(intervalId);
         }
+        if (!isStarted) {
+            setTimer(0);
+        }
     }, [isStarted, isGameOver, isWin]);
 
-    return <div className="flex items-center justify-center p-1">{timer}</div>;
+    const counter = timer >= 999 ? "999" : timer.toString().padStart(3, "0");
+    return <NumbersComponent number={counter} />;
 };
 
 export default TimerComponent;
