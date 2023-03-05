@@ -25,7 +25,9 @@ cd Minesweeper-VK
 npm install
 ```
 
-**Note**: Make sure you have Node.js installed on your computer before running the above command. You can download it from https://nodejs.org/en/. 5. Once the dependencies are installed, start the project by running:
+**Note**: Make sure you have Node.js installed on your computer before running the above command. You can download it from https://nodejs.org/en/.
+
+5. Once the dependencies are installed, start the project by running:
 
 ```
 npm start
