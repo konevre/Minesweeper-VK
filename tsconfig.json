@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "module": "commonjs",
     "target": "es5",
     "lib": [
@@ -15,11 +15,8 @@
     "allowJs": true,
     "baseUrl": "./",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "moduleResolution": "node",
-    "downlevelIteration": true,
   },
-  "typeRoots" : ["node_modules/@types", "types.d.ts"],
-  "include": ["src/**/**/*", ".eslintrc", "types.d.ts"],
+  "include": ["src/**/**/*", "types.d.ts"],
   "exclude": ["node_modules"]
 }

@@ -14,10 +14,6 @@ const FieldComponent: React.FC = () => {
     const isFieldDisabled: string =
         isGameOver || isWin ? "pointer-events-none" : "";
 
-    const cells: JSX.Element[] = [...new Array(16 * 16)].map((_, index) => {
-        return <CellComponent index={index} key={index} />;
-    });
-
     useEffect(() => {
         if (total === 0 && isStarted) {
             const isAllOpen = revealed.length + flags.length === 16 * 16;
@@ -25,7 +21,6 @@ const FieldComponent: React.FC = () => {
                 dispatch(winGameToggle(true));
             }
         }
-        checkIfWin();
     }, [total, revealed]);
 
     const checkIfWin = (): boolean => {
@@ -37,10 +32,13 @@ const FieldComponent: React.FC = () => {
         return result;
     };
 
-    // TODO - вынести в отдельный, как и в useHandleClicks
     const onMouseUp = (): void => {
         dispatch(setMouse(false));
     };
+
+    const cells: JSX.Element[] = [...new Array(16 * 16)].map((_, index) => {
+        return <CellComponent index={index} key={index} />;
+    });
 
     return (
         <div

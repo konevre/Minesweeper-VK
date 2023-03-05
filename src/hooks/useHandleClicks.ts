@@ -3,7 +3,7 @@ import {
     failGameToggle,
     setBombs,
     setMouse,
-    startGameToggle,
+    startGameToggle
 } from "../store/minesweeperSlice";
 
 import { DigitsExcluded } from "../types";
@@ -93,7 +93,6 @@ const useHandleClicks = (index: number): useHandleClicksProps => {
     const bgImgOnHover: string =
         isMouseDown && !isRevealed ? "hover:bg-opened" : "";
 
-    // TODO вынести
     const startGame = (bombs: number[]): void => {
         dispatch(setBombs(bombs));
         dispatch(startGameToggle(true));
@@ -156,7 +155,7 @@ const useHandleClicks = (index: number): useHandleClicksProps => {
         isMouseDown,
         onMouseDown,
         onMouseUp,
-        isRevealed,
+        isRevealed
     };
 };
 

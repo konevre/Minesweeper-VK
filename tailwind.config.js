@@ -5,10 +5,10 @@ module.exports = {
     theme: {
         extend: {
             gridTemplateColumns: {
-                16: "repeat(16, 24px)",
+                16: "repeat(16, 24px)"
             },
             gridTemplateRows: {
-                16: "repeat(16, 24px)",
+                16: "repeat(16, 24px)"
             },
             backgroundImage: {
                 opened: "url('/src/assets/cell/opened.svg')",
@@ -25,9 +25,9 @@ module.exports = {
                 5: "url('/src/assets/cell/5.svg')",
                 6: "url('/src/assets/cell/6.svg')",
                 7: "url('/src/assets/cell/7.svg')",
-                // 8: "url('/src/assets/cell/8.svg')",
-            },
-        },
+                8: "url('/src/assets/cell/8.svg')"
+            }
+        }
     },
-    plugins: [],
+    plugins: []
 };
