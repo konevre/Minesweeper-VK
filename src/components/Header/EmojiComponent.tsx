@@ -1,28 +1,24 @@
 import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
-import lose from "../../assets/header/face_lose.svg";
-import win from "../../assets/header/face_win.svg";
-import pressed from "../../assets/header/face_pressed.svg";
-import unpressed from "../../assets/header/face_unpressed.svg";
-import shock from "../../assets/header/face_shock.png";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { headerImages } from "../../utils/images";
+
 import {
     failGameToggle,
     startGameToggle,
     revealCells,
     setBombs,
     setFlag,
-    winGameToggle,
+    winGameToggle
 } from "../../store/minesweeperSlice";
 
-const EmojiComponent = () => {
-    const { isGameOver, isWin } = useAppSelector((state) => state.minesweeper);
-    const [isFacePressed, setFace] = useState(false);
-    const { isMouseDown } = useAppSelector((state) => state.minesweeper);
-
+const EmojiComponent: React.FC = () => {
     const dispatch = useAppDispatch();
+    const { isGameOver, isWin } = useAppSelector((state) => state.minesweeper);
+    const { isMouseDown } = useAppSelector((state) => state.minesweeper);
+    const [isFacePressed, setFace] = useState(false);
 
-    const restartGame = () => {
+    const restartGame = (): void => {
         dispatch(setFlag([]));
         dispatch(setBombs([]));
         dispatch(revealCells([]));
@@ -31,29 +27,30 @@ const EmojiComponent = () => {
         dispatch(winGameToggle(false));
     };
 
-    const onFacePressed = () => {
+    const onFacePressed = (): void => {
         setFace(true);
     };
-    const onFaceUnpressed = () => {
+    const onFaceUnpressed = (): void => {
         setFace(false);
     };
 
     const showFace = () => {
         if (isFacePressed) {
-            return pressed;
+            return headerImages["pressed"];
         }
         if (isMouseDown) {
-            return shock;
+            return headerImages["shock"];
         } else {
             if (isGameOver) {
-                return lose;
+                return headerImages["lose"];
             }
             if (isWin) {
-                return win;
+                return headerImages["win"];
             }
-            return unpressed;
+            return headerImages["unpressed"];
         }
     };
+
     const face = showFace();
 
     return (
@@ -61,7 +58,7 @@ const EmojiComponent = () => {
             onClick={restartGame}
             onMouseDown={onFacePressed}
             onMouseUp={onFaceUnpressed}
-            className="flex h-8 items-center justify-center"
+            className="flex h-10 items-center justify-center"
         >
             <img src={face} alt="face" className="h-full" />
         </div>

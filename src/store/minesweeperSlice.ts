@@ -17,10 +17,8 @@ const initialState: Minesweeper = {
     isMouseDown: false,
     bombs: [],
     revealed: [],
-    flags: [],
+    flags: []
 };
-
-// TODO -> WIN CONDITIONS
 
 const minesweeperSlice = createSlice({
     name: "minesweeper",
@@ -46,8 +44,8 @@ const minesweeperSlice = createSlice({
         },
         setMouse: (state, action: PayloadAction<boolean>) => {
             state.isMouseDown = action.payload;
-        },
-    },
+        }
+    }
 });
 
 const { actions, reducer } = minesweeperSlice;
@@ -60,5 +58,5 @@ export const {
     setBombs,
     revealCells,
     setFlag,
-    setMouse,
+    setMouse
 } = actions;

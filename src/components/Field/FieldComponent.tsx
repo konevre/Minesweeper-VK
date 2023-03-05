@@ -1,45 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { setMouse, winGameToggle } from "../../store/minesweeperSlice";
 
 import CellComponent from "./CellComponent";
 
 const FieldComponent: React.FC = () => {
-    const cells = [...new Array(16 * 16)].map((_, index) => {
-        return <CellComponent index={index} key={index} />;
-    });
-
     const dispatch = useAppDispatch();
     const { isGameOver, isWin, flags, bombs, isStarted, revealed } =
         useAppSelector((state) => state.minesweeper);
 
-    const isFieldDisabled = isGameOver || isWin ? "pointer-events-none" : "";
+    const total: number = bombs.length - flags.length;
+    const isFieldDisabled: string =
+        isGameOver || isWin ? "pointer-events-none" : "";
 
-    const checkIfWin = () => {
-        const sortedFlags = [...flags].sort();
-        const sortedBombs = [...bombs].sort();
-        const result = sortedFlags.every(
-            (element, index) => element === sortedBombs[index]
-        );
-        return result;
-    };
-
-    const total = bombs.length - flags.length;
+    const cells: JSX.Element[] = [...new Array(16 * 16)].map((_, index) => {
+        return <CellComponent index={index} key={index} />;
+    });
 
     useEffect(() => {
         if (total === 0 && isStarted) {
             const isAllOpen = revealed.length + flags.length === 16 * 16;
             if (checkIfWin() && isAllOpen) {
-                // console.log(revealed.length);
                 dispatch(winGameToggle(true));
             }
         }
         checkIfWin();
     }, [total, revealed]);
 
+    const checkIfWin = (): boolean => {
+        const sortedFlags: number[] = [...flags].sort();
+        const sortedBombs: number[] = [...bombs].sort();
+        const result: boolean = sortedFlags.every(
+            (element, index) => element === sortedBombs[index]
+        );
+        return result;
+    };
+
     // TODO - вынести в отдельный, как и в useHandleClicks
-    const onMouseUp = () => {
+    const onMouseUp = (): void => {
         dispatch(setMouse(false));
     };
 

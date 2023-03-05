@@ -1,12 +1,6 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import useCellProps from "../../hooks/useCellProps";
-import useHandleClicks from "../../hooks/useHandleClicks";
-import { setMouse } from "../../store/minesweeperSlice";
-import CellImage from "../GameAssets/CellImage";
 
-// import closed from "../../../asset/resource/bomb.png";
-// import closed from "../../asset/resource/closed.svg";
+import useHandleClicks from "../../hooks/useHandleClicks";
 
 interface CellProps {
     index: number;
@@ -15,7 +9,6 @@ interface CellProps {
 const CellComponent: React.FC<CellProps> = ({ index }) => {
     const { handleClick, bgImg, bgImgOnHover, onMouseDown, onMouseUp } =
         useHandleClicks(index);
-
     return (
         <div
             onMouseDown={onMouseDown}

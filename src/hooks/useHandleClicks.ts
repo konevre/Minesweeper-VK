@@ -6,14 +6,29 @@ import {
     startGameToggle,
 } from "../store/minesweeperSlice";
 
+import { DigitsExcluded } from "../types";
+
 import React from "react";
+
+import { cellImages } from "../utils/images";
 
 import { generateBombs } from "../utils/utils";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import useCellProps from "./useCellProps";
 import useReveal from "./useReveal";
 
-const useHandleClicks = (index: number) => {
+interface useHandleClicksProps {
+    handleClick: (e: React.MouseEvent<HTMLElement>) => void;
+    activatedBombCell: boolean;
+    bgImg: string;
+    bgImgOnHover: string;
+    isMouseDown: boolean;
+    onMouseDown: (e: React.MouseEvent<HTMLElement>) => void;
+    onMouseUp: () => void;
+    isRevealed: boolean;
+}
+
+const useHandleClicks = (index: number): useHandleClicksProps => {
     const dispatch = useAppDispatch();
     const { isStarted, bombs, isGameOver, isMouseDown } = useAppSelector(
         (state) => state.minesweeper
@@ -27,59 +42,64 @@ const useHandleClicks = (index: number) => {
     useEffect(() => {
         if (!isStarted) {
             setQuestion(false);
+            setActivatedBombCell(false);
         }
     }, [isStarted]);
 
-    // TODO RIGHT CLICK BUT NOT CONTEXT
-    const onMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+    const onMouseDown = (e: React.MouseEvent<HTMLElement>): void => {
         const leftClick = e.button === 0;
-        if (leftClick) dispatch(setMouse(true));
+        if (leftClick && !isRevealed) dispatch(setMouse(true));
     };
-    const onMouseUp = () => {
+    const onMouseUp = (): void => {
         dispatch(setMouse(false));
     };
 
-    const makeCell = () => {
+    const makeCell = (): string => {
         if (!isStarted) {
             if (isFlagged) {
-                return "flag";
+                return cellImages["flag"];
             } else {
-                return isQuestion ? "question" : "closed";
+                return isQuestion
+                    ? cellImages["question"]
+                    : cellImages["closed"];
             }
         }
 
         if (isBomb && isGameOver) {
             if (activatedBombCell) {
-                return "mine_red";
+                return cellImages["mine_red"];
             } else {
-                return "mine";
+                return cellImages["mine"];
             }
         }
 
         if (isRevealed) {
-            return adjacentBombsNum === 0 ? "opened" : `${adjacentBombsNum}`;
+            return adjacentBombsNum === 0
+                ? cellImages["opened"]
+                : cellImages[adjacentBombsNum as DigitsExcluded];
         }
 
         if (isFlagged) {
             if (isGameOver && !isBomb) {
-                return "mine_wrong";
+                return cellImages["mine_wrong"];
             }
-            return "flag";
+            return cellImages["flag"];
         } else {
-            return isQuestion ? "question" : "closed";
+            return isQuestion ? cellImages["question"] : cellImages["closed"];
         }
     };
 
-    const bgImg = `bg-${makeCell()}`;
-    const bgImgOnHover = isMouseDown && !isRevealed ? "hover:bg-opened" : "";
+    const bgImg: string = makeCell();
+    const bgImgOnHover: string =
+        isMouseDown && !isRevealed ? "hover:bg-opened" : "";
 
     // TODO вынести
-    const startGame = (bombs: number[]) => {
+    const startGame = (bombs: number[]): void => {
         dispatch(setBombs(bombs));
         dispatch(startGameToggle(true));
     };
 
-    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+    const handleClick = (e: React.MouseEvent<HTMLElement>): void => {
         e.preventDefault();
 
         const leftClick = e.type === "click";
@@ -98,7 +118,7 @@ const useHandleClicks = (index: number) => {
             setQuestion(true);
         } else {
             if (!isStarted) {
-                const bombs = generateBombs(index);
+                const bombs: number[] = generateBombs(index);
                 startGame(bombs);
             }
             isQuestion ? setQuestion(false) : onFlag(index);
@@ -117,7 +137,7 @@ const useHandleClicks = (index: number) => {
         }
 
         if (!isStarted) {
-            const bombs = generateBombs(index);
+            const bombs: number[] = generateBombs(index);
             startGame(bombs);
 
             if (isEmpty) revealEmptyCells(index, bombs);
